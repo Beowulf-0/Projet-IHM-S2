@@ -1,4 +1,4 @@
-﻿Public Class Form4
+Public Class Form4
     Dim t_OptionsTemps() As String = {"Aucun", "Désactiver le temps", "Régler le temps à :"}
     Dim t_OptionsAutre() As String = {"Changez le thème des cartes : ", "Accéder / créer au chemin de sauvegarde", "Activer la pause dans le jeu"}
     Dim t_imagesCartes() As String = {"Test", "Test1", "Test2"}
@@ -48,13 +48,14 @@
     End Sub
 
     Private Sub AccederFichierSauv_Click(sender As Object, e As EventArgs) Handles AccederFichierSauv.Click
-        Dim file As System.IO.StreamWriter
-        file = My.Computer.FileSystem.OpenTextFileWriter("./Sauvegarde/sauvegarde.txt", True)
-        If Form1.NomJoueur.Text <= 3 Then
-            file.WriteLine("Nom : Gerard")
-            file.Close()
+        Dim nom_fichier As String = "C:\Users\Wahad\source\repos\ProjetIHM-Mehdi\ProjetIHM-Mehdi\Sauvegarde\sauvegarde.txt"
+        If System.IO.File.Exists(nom_fichier) Then
+            Dim stats_Joueur As New System.IO.StreamWriter(nom_fichier)
+            stats_Joueur.Write(Form1.NomJoueur.Text)
+            MessageBox.Show("Texte écrit")
+            stats_Joueur.Close()
         Else
-            file.WriteLine("Nom :" + Form1.NomJoueur.Text)
+            MessageBox.Show("Le fichier n'existe pas")
         End If
     End Sub
 End Class
