@@ -1,4 +1,5 @@
 ﻿Public Class Plateau
+    Dim temps = 60
     Dim choice As Integer = 0
     Dim oldCard As Object
     Dim oldValue As Integer
@@ -62,8 +63,36 @@
         Next i
     End Sub
 
+    Private Function calculScore()
+        Dim x As Integer = 0
+        Array.Sort(pbValue)
+        For i = 1 To 19 Step +1
+            If pbValue(i - 1) = pbValue(i) And pbValue(i - 1) <> -1 Then
+                x += 1
+            End If
+        Next
+        Return x
+    End Function
+
     Private Sub Plateau_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        Label1.Text = temps
         RandomizeArray(nb)
+        Timer1.Start()
+    End Sub
+
+    Private Sub Timer1_Tick(sender As Object, e As EventArgs) Handles Timer1.Tick
+        temps -= 1
+        Label1.Text = temps
+        If temps = 0 Then
+            Timer1.Stop()
+            If check = 0 Then
+                pbValue(numCardSaved) = -1
+                pbValue(oldValue) = -1
+                ShowCard.Stop()
+            End If
+            check = 0
+            Label2.Text = "Score : " + Str(calculScore())
+        End If
     End Sub
 
     Private Sub ShowCard_Tick(sender As Object, e As EventArgs) Handles ShowCard.Tick
