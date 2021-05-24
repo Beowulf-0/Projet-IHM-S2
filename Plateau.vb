@@ -2,6 +2,9 @@
     Dim choice As Integer = 0
     Dim oldCard As Object
     Dim oldValue As Integer
+    Dim numCardSaved As Integer
+    Dim cardClickedSaved As Object
+    Dim check As Integer = 1
     Dim card = {My.Resources.carte0, My.Resources.carte1,
             My.Resources.carte2, My.Resources.Carte3,
             My.Resources.carte4, My.Resources.carte5,
@@ -14,7 +17,7 @@
 
     Private Sub retourneCarte(numCard As Integer, cardClicked As Object)
         Dim click = 0
-        If pbValue(numCard) = -1 Then
+        If pbValue(numCard) = -1 And check = 1 Then
             cardClicked.Image = card(nb(numCard))
             If choice = 0 And click = 0 Then
                 oldCard = cardClicked
@@ -26,16 +29,46 @@
 
             If choice = 1 And click = 0 Then
                 pbValue(numCard) = nb(numCard)
-                If pbValue(numCard) <> oldValue Then
-                    cardClicked.Image = My.Resources.carte
-                    oldCard.Image = My.Resources.carte
-                    pbValue(numCard) = -1
-                    pbValue(oldValue) = -1
+                If pbValue(numCard) <> pbValue(oldValue) Then
+                    numCardSaved = numCard
+                    cardClickedSaved = cardClicked
+                    ShowCard.Start()
+                    check = 0
+
                 End If
                 choice = 0
                 click = 1
             End If
         End If
+    End Sub
+
+    Private Sub retourneCarte2(numCard As Integer, cardClicked As Object)
+        cardClicked.Image = My.Resources.carte
+        oldCard.Image = My.Resources.carte
+        pbValue(numCard) = -1
+        pbValue(oldValue) = -1
+        check = 1
+    End Sub
+
+    Private Sub RandomizeArray(ByVal items() As Integer)
+        Dim max_index As Integer = items.Length - 1
+        Dim rnd As New Random
+        For i As Integer = 0 To max_index - 1
+            Dim j As Integer = rnd.Next(i, max_index + 1)
+
+            Dim temp As Integer = items(i)
+            items(i) = items(j)
+            items(j) = temp
+        Next i
+    End Sub
+
+    Private Sub Plateau_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        RandomizeArray(nb)
+    End Sub
+
+    Private Sub ShowCard_Tick(sender As Object, e As EventArgs) Handles ShowCard.Tick
+        retourneCarte2(numCardSaved, cardClickedSaved)
+        ShowCard.Stop()
     End Sub
 
     Private Sub PictureBox1_Click(sender As Object, e As EventArgs) Handles PictureBox1.Click
