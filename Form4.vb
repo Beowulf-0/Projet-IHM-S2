@@ -42,10 +42,7 @@ Public Class Form4
     Private Sub AccederFichierSauv_Click(sender As Object, e As EventArgs) Handles AccederFichierSauv.Click
         Dim nom_fichier As String = "C:\Users\Wahad\source\repos\ProjetIHM-Mehdi\ProjetIHM-Mehdi\Sauvegarde\sauvegarde.txt"
         If System.IO.File.Exists(nom_fichier) Then
-            'Dim stats_Joueur As New System.IO.StreamWriter(nom_fichier, True)
-            'stats_Joueur.Write(Form1.NomJoueur.Text)
-            'MessageBox.Show("Texte écrit")
-            'stats_Joueur.Close()
+            Process.Start(nom_fichier)
         Else
             MessageBox.Show("Le fichier n'existe pas")
         End If
@@ -58,14 +55,9 @@ Public Class Form4
             End If
             If IsNumeric(ReglerTemps.Text) Then
                 time = CInt(ReglerTemps.Text)
-                ReglerTemps.Clear()
             End If
         End If
     End Sub
-
-    Public Function getTime()
-        Return time * 60
-    End Function
 
     Private Sub ReglerTemps_KeyPress(sender As Object, e As KeyPressEventArgs) Handles ReglerTemps.KeyPress
         If Not Char.IsDigit(e.KeyChar) Then
