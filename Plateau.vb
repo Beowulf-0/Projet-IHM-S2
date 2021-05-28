@@ -1,16 +1,20 @@
 ﻿Public Class Plateau
+    'Initialisation des variables avec les données d'autres forms
     Dim joueurQuiJoue
     Dim theme As Integer = 1
-
     Const TPS As Integer = 60
     Dim temps = TPS
+
+    'Variable pour la fin de partie
     Dim ptScore As Integer = 0
     Dim tpsScore As Integer = 0
     Dim fin As Boolean = False
 
+    'Variable essentiel pour la pause
     Dim estEnPause As Boolean = False
     Dim etaitRetourner As Boolean = False
 
+    'Variable principales pour l'algorithme du jeu
     Dim choix As Integer = 0
     Dim oldCard As Object
     Dim oldValue As Integer
@@ -21,11 +25,16 @@
     Dim valeur = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
     Dim pbValue = {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}
 
+    'Fonction qui permet de retouner les cartes et de prendre en compte s'il sont les même ou non
     Private Sub retourneCarte(numCard As Integer, cardClicked As Object)
         Dim click = 0
+        'Verifie si la carte est déja retourner
         If pbValue(numCard) = -1 And peutRetourner = True Then
+            'Retourne la carte
             cardClicked.Image = card(valeur(numCard) + 1)
+            'Pour la première carte retourné
             If choix = 0 And click = 0 Then
+                'Enrigistre la carte cliqué
                 oldCard = cardClicked
                 pbValue(numCard) = valeur(numCard)
                 oldValue = numCard
@@ -33,14 +42,18 @@
                 click = 1
             End If
 
+            'Pour la deuxième carte retourné
             If choix = 1 And click = 0 Then
                 pbValue(numCard) = valeur(numCard)
+
+                'Verifie si les deux cartes ont les même symboles
                 If pbValue(numCard) <> pbValue(oldValue) Then
                     numCardSaved = numCard
                     cardClickedSaved = cardClicked
                     ShowCard.Start()
                     peutRetourner = False
                 Else
+                    'Actualise le score
                     ptScore += 1
                     tpsScore = TPS - temps
                     ScoreLabel.Text = "Score : " + Str(ptScore) + " en " + Str(tpsScore) + "sc"
@@ -54,6 +67,7 @@
         End If
     End Sub
 
+    'Fonction qui retourne les cartes qui n'ont pas les mêmes symboles
     Private Sub retourneCarte2(numCard As Integer, cardClicked As Object)
         cardClicked.Image = card(0)
         oldCard.Image = card(0)
@@ -62,6 +76,7 @@
         peutRetourner = True
     End Sub
 
+    'Fonction pour mélanger une liste
     Private Sub RandomizeArray(ByVal items() As Integer)
         Dim max_index As Integer = items.Length - 1
         Dim rnd As New Random
@@ -76,6 +91,8 @@
 
     Private Sub Plateau_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         'nomJoueur.Text = joueurQuiJoue.nom
+
+        'Choix du thème
         If theme = 0 Then
             card = {My.Resources.carteBV__1_, My.Resources.carteBV__2_,
             My.Resources.carteBV__3_, My.Resources.carteBV__4_,
@@ -100,19 +117,26 @@
             My.Resources.carteRO__11_}
         End If
 
+        'Initialisation de la liste des PictureBox
         Dim pb = {PictureBox1, PictureBox2, PictureBox3, PictureBox4,
             PictureBox5, PictureBox6, PictureBox7, PictureBox8,
             PictureBox9, PictureBox10, PictureBox11, PictureBox12,
             PictureBox13, PictureBox14, PictureBox15, PictureBox16,
             PictureBox17, PictureBox18, PictureBox19, PictureBox20}
-        TempsLabel.Text = temps
+        TempsLabel.Text = temps \ 60 & ":" & temps Mod 60
+
+        'Melange la liste des "valeurs" des cartes
         RandomizeArray(valeur)
+
         TempsJeu.Start()
+
+        'Initialisation des images des cartes
         For i = 0 To pb.Length - 1 Step +1
             pb(i).Image = card(0)
         Next
     End Sub
 
+    'Timer pour le temps de jeu
     Private Sub Timer1_Tick(sender As Object, e As EventArgs) Handles TempsJeu.Tick
         If fin = False Then
             temps -= 1
@@ -127,23 +151,27 @@
             End If
             peutRetourner = False
             TempsLabel.Text = "Fin"
-            'If ptScore > joueurQuiJoue.score Then
-            '	joueurQuiJoue.score = ptScore
-            '	joueurQuiJoue.tps = tpsScore
-            'Else if ptScore == joueurQuiJoue.score And tpsScore < joueurQuiJoue.tps
-            '	joueurQuiJoue.tps = tpsScore
+            'If ptScore > joueurQuiJoue.nombreMaxCarré Then
+            '	joueurQuiJoue.nombreMaxCarré = ptScore
+            '	joueurQuiJoue.tempsMinCarré = tpsScore
+            'Else if ptScore == joueurQuiJoue.nombreMaxCarré And tpsScore < joueurQuiJoue.tempsMinCarré
+            '	joueurQuiJoue.tempsMinCarré = tpsScore
             'End if
         End If
     End Sub
 
+    'Timer du temps des deux cartes retourné s'ils n'ont pas les mêmes symboles
     Private Sub ShowCard_Tick(sender As Object, e As EventArgs) Handles ShowCard.Tick
         retourneCarte2(numCardSaved, cardClickedSaved)
         ShowCard.Stop()
     End Sub
 
-    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Pause.Click
+    'Bouton pause
+    Private Sub Pause_Click(sender As Object, e As EventArgs) Handles Pause.Click
+
         If estEnPause = False Then
             Pause.Text = "Pause : On"
+            'peutRetourner retient si la pause intervient lorsqu'on affiche les deux cartes retourné qui n'ont pas le même symbole
             If peutRetourner = False Then
                 etaitRetourner = True
             End If
@@ -164,6 +192,7 @@
         End If
     End Sub
 
+    'Bouton abandonner quitte le formulaire et revient au menu
     Private Sub Abandonner_Click(sender As Object, e As EventArgs) Handles Abandonner.Click
         Dim choixQuitter As Integer = MsgBox("Voulez vous continuer ?",
                                              MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2 + MsgBoxStyle.Critical,
@@ -173,6 +202,7 @@
         End If
     End Sub
 
+    'Appel de la fonction des PictureBox
     Private Sub PictureBox1_Click(sender As Object, e As EventArgs) Handles PictureBox1.Click
         retourneCarte(0, PictureBox1)
     End Sub
