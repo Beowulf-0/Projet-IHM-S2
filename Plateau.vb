@@ -1,4 +1,5 @@
 ﻿Public Class Plateau
+    Dim joueurQuiJoue
     Dim theme As Integer = 1
 
     Const TPS As Integer = 60
@@ -74,6 +75,7 @@
     End Sub
 
     Private Sub Plateau_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        'nomJoueur.Text = joueurQuiJoue.nom
         If theme = 0 Then
             card = {My.Resources.carteBV__1_, My.Resources.carteBV__2_,
             My.Resources.carteBV__3_, My.Resources.carteBV__4_,
@@ -114,7 +116,7 @@
     Private Sub Timer1_Tick(sender As Object, e As EventArgs) Handles TempsJeu.Tick
         If fin = False Then
             temps -= 1
-            TempsLabel.Text = temps
+            TempsLabel.Text = temps \ 60 & ":" & temps Mod 60
         End If
         If temps = 0 Or fin = True Then
             TempsJeu.Stop()
@@ -125,6 +127,12 @@
             End If
             peutRetourner = False
             TempsLabel.Text = "Fin"
+            'If ptScore > joueurQuiJoue.score Then
+            '	joueurQuiJoue.score = ptScore
+            '	joueurQuiJoue.tps = tpsScore
+            'Else if ptScore == joueurQuiJoue.score And tpsScore < joueurQuiJoue.tps
+            '	joueurQuiJoue.tps = tpsScore
+            'End if
         End If
     End Sub
 
@@ -153,6 +161,15 @@
             Else
                 peutRetourner = True
             End If
+        End If
+    End Sub
+
+    Private Sub Abandonner_Click(sender As Object, e As EventArgs) Handles Abandonner.Click
+        Dim choixQuitter As Integer = MsgBox("Voulez vous continuer ?",
+                                             MsgBoxStyle.YesNo + MsgBoxStyle.DefaultButton2 + MsgBoxStyle.Critical,
+                                             "Confirmation")
+        If choixQuitter = vbYes Then
+            Me.Close()
         End If
     End Sub
 
@@ -235,5 +252,4 @@
     Private Sub PictureBox20_Click(sender As Object, e As EventArgs) Handles PictureBox20.Click
         retourneCarte(19, PictureBox20)
     End Sub
-
 End Class
