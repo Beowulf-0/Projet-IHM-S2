@@ -1,6 +1,7 @@
 Public Class Form4
     Dim t_OptionsTemps() As String = {"Aucun", "Désactiver le temps", "Régler le temps à :"}
     Dim t_imagesCartes() As String = {"Rouge-Orange", "Bleu-Vert", "Gris-Noir"}
+    Private indexTheme As Integer
     Dim time As Integer
 
     Private Sub Quitter_Click(sender As Object, e As EventArgs) Handles Quitter.Click
@@ -34,8 +35,10 @@ Public Class Form4
     Private Sub CheckBox2_CheckedChanged(sender As Object, e As EventArgs) Handles PauseJeu.CheckedChanged
         If PauseJeu.Checked = True Then
             Form2.Pause.Visible = True
+            Form2.Pause.Enabled = True
         Else
             Form2.Pause.Visible = False
+            Form2.Pause.Enabled = False
         End If
     End Sub
 
@@ -72,4 +75,20 @@ Public Class Form4
             ReglerTemps.Visible = False
         End If
     End Sub
+
+    Private Sub RadioButton2_CheckedChanged(sender As Object, e As EventArgs) Handles RadioButton2.CheckedChanged
+        If RadioButton2.Checked = True Then
+            Form2.TempsImparti.Enabled = False
+        Else
+            Form2.TempsImparti.Enabled = True
+        End If
+    End Sub
+
+    Private Sub ThemeCartes_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ThemeCartes.SelectedIndexChanged
+        indexTheme = ThemeCartes.SelectedIndex
+    End Sub
+
+    Public Function getIndexTheme() As Integer
+        Return indexTheme
+    End Function
 End Class
