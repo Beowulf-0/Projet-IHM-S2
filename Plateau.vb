@@ -1,31 +1,29 @@
 ﻿Public Class Plateau
+    Dim theme As Integer = 1
 
     Const TPS As Integer = 60
     Dim temps = TPS
     Dim ptScore As Integer = 0
     Dim tpsScore As Integer = 0
-    Dim fin As Integer = 0
+    Dim fin As Boolean = False
+
+    Dim estEnPause As Boolean = False
+    Dim etaitRetourner As Boolean = False
 
     Dim choix As Integer = 0
     Dim oldCard As Object
     Dim oldValue As Integer
     Dim numCardSaved As Integer
     Dim cardClickedSaved As Object
-    Dim peutRetourner As Integer = 1
-
-    Dim card = {My.Resources.carte0, My.Resources.carte1,
-            My.Resources.carte2, My.Resources.Carte3,
-            My.Resources.carte4, My.Resources.carte5,
-            My.Resources.carte6, My.Resources.carte7,
-            My.Resources.carte8, My.Resources.carte9}
-
+    Dim peutRetourner As Boolean = True
+    Dim card = {}
     Dim valeur = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
     Dim pbValue = {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}
 
     Private Sub retourneCarte(numCard As Integer, cardClicked As Object)
         Dim click = 0
-        If pbValue(numCard) = -1 And peutRetourner = 1 Then
-            cardClicked.Image = card(valeur(numCard))
+        If pbValue(numCard) = -1 And peutRetourner = True Then
+            cardClicked.Image = card(valeur(numCard) + 1)
             If choix = 0 And click = 0 Then
                 oldCard = cardClicked
                 pbValue(numCard) = valeur(numCard)
@@ -40,13 +38,13 @@
                     numCardSaved = numCard
                     cardClickedSaved = cardClicked
                     ShowCard.Start()
-                    peutRetourner = 0
+                    peutRetourner = False
                 Else
                     ptScore += 1
                     tpsScore = TPS - temps
                     ScoreLabel.Text = "Score : " + Str(ptScore) + " en " + Str(tpsScore) + "sc"
                     If ptScore = 10 Then
-                        fin = 1
+                        fin = True
                     End If
                 End If
                 choix = 0
@@ -56,11 +54,11 @@
     End Sub
 
     Private Sub retourneCarte2(numCard As Integer, cardClicked As Object)
-        cardClicked.Image = My.Resources.carte
-        oldCard.Image = My.Resources.carte
+        cardClicked.Image = card(0)
+        oldCard.Image = card(0)
         pbValue(numCard) = -1
         pbValue(oldValue) = -1
-        peutRetourner = 1
+        peutRetourner = True
     End Sub
 
     Private Sub RandomizeArray(ByVal items() As Integer)
@@ -75,36 +73,57 @@
         Next i
     End Sub
 
-    'Private Function calculScore()
-    'Dim x As Integer = 0
-    'Array.Sort(pbValue)
-    'For i = 1 To 19 Step +1
-    'If pbValue(i - 1) = pbValue(i) And pbValue(i - 1) <> -1 Then
-    'x += 1
-    'End If
-    'Next
-    'Return x
-    'End Function
-
     Private Sub Plateau_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        If theme = 0 Then
+            card = {My.Resources.carteBV__1_, My.Resources.carteBV__2_,
+            My.Resources.carteBV__3_, My.Resources.carteBV__4_,
+            My.Resources.carteBV__5_, My.Resources.carteBV__6_,
+            My.Resources.carteBV__7_, My.Resources.carteBV__8_,
+            My.Resources.carteBV__9_, My.Resources.carteBV__10_,
+            My.Resources.carteBV__11_}
+        ElseIf theme = 1 Then
+            card = {My.Resources.carteGN__1_, My.Resources.carteGN__2_,
+                My.Resources.carteGN__3_, My.Resources.carteGN__4_,
+            My.Resources.carteGN__5_, My.Resources.carteGN__6_,
+            My.Resources.carteGN__7_, My.Resources.carteGN__8_,
+            My.Resources.carteGN__9_, My.Resources.carteGN__10_,
+            My.Resources.carteGN__11_}
+
+        ElseIf theme = 2 Then
+            card = {My.Resources.carteRO__1_, My.Resources.carteRO__2_,
+                My.Resources.carteRO__3_, My.Resources.carteRO__4_,
+            My.Resources.carteRO__5_, My.Resources.carteRO__6_,
+            My.Resources.carteRO__7_, My.Resources.carteRO__8_,
+            My.Resources.carteRO__9_, My.Resources.carteRO__10_,
+            My.Resources.carteRO__11_}
+        End If
+
+        Dim pb = {PictureBox1, PictureBox2, PictureBox3, PictureBox4,
+            PictureBox5, PictureBox6, PictureBox7, PictureBox8,
+            PictureBox9, PictureBox10, PictureBox11, PictureBox12,
+            PictureBox13, PictureBox14, PictureBox15, PictureBox16,
+            PictureBox17, PictureBox18, PictureBox19, PictureBox20}
         TempsLabel.Text = temps
         RandomizeArray(valeur)
         TempsJeu.Start()
+        For i = 0 To pb.Length - 1 Step +1
+            pb(i).Image = card(0)
+        Next
     End Sub
 
     Private Sub Timer1_Tick(sender As Object, e As EventArgs) Handles TempsJeu.Tick
-        If fin = 0 Then
+        If fin = False Then
             temps -= 1
             TempsLabel.Text = temps
         End If
-        If temps = 0 Or fin = 1 Then
+        If temps = 0 Or fin = True Then
             TempsJeu.Stop()
-            If peutRetourner = 0 Then
+            If peutRetourner = False Then
                 pbValue(numCardSaved) = -1
                 pbValue(oldValue) = -1
                 ShowCard.Stop()
             End If
-            peutRetourner = 0
+            peutRetourner = False
             TempsLabel.Text = "Fin"
         End If
     End Sub
@@ -112,6 +131,29 @@
     Private Sub ShowCard_Tick(sender As Object, e As EventArgs) Handles ShowCard.Tick
         retourneCarte2(numCardSaved, cardClickedSaved)
         ShowCard.Stop()
+    End Sub
+
+    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Pause.Click
+        If estEnPause = False Then
+            Pause.Text = "Pause : On"
+            If peutRetourner = False Then
+                etaitRetourner = True
+            End If
+            estEnPause = True
+            peutRetourner = False
+            TempsJeu.Stop()
+            ShowCard.Stop()
+        Else
+            Pause.Text = "Pause : Off"
+            estEnPause = False
+            TempsJeu.Start()
+            If etaitRetourner = True Then
+                ShowCard.Start()
+                etaitRetourner = False
+            Else
+                peutRetourner = True
+            End If
+        End If
     End Sub
 
     Private Sub PictureBox1_Click(sender As Object, e As EventArgs) Handles PictureBox1.Click
@@ -193,4 +235,5 @@
     Private Sub PictureBox20_Click(sender As Object, e As EventArgs) Handles PictureBox20.Click
         retourneCarte(19, PictureBox20)
     End Sub
+
 End Class
