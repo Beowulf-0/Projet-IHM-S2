@@ -1,43 +1,55 @@
 ﻿Public Class Plateau
-    Dim temps = 60
-    Dim choice As Integer = 0
+
+    Const TPS As Integer = 60
+    Dim temps = TPS
+    Dim ptScore As Integer = 0
+    Dim tpsScore As Integer = 0
+    Dim fin As Integer = 0
+
+    Dim choix As Integer = 0
     Dim oldCard As Object
     Dim oldValue As Integer
     Dim numCardSaved As Integer
     Dim cardClickedSaved As Object
-    Dim check As Integer = 1
+    Dim peutRetourner As Integer = 1
+
     Dim card = {My.Resources.carte0, My.Resources.carte1,
             My.Resources.carte2, My.Resources.Carte3,
             My.Resources.carte4, My.Resources.carte5,
             My.Resources.carte6, My.Resources.carte7,
             My.Resources.carte8, My.Resources.carte9}
 
-    Dim nb = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
-
+    Dim valeur = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
     Dim pbValue = {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}
 
     Private Sub retourneCarte(numCard As Integer, cardClicked As Object)
         Dim click = 0
-        If pbValue(numCard) = -1 And check = 1 Then
-            cardClicked.Image = card(nb(numCard))
-            If choice = 0 And click = 0 Then
+        If pbValue(numCard) = -1 And peutRetourner = 1 Then
+            cardClicked.Image = card(valeur(numCard))
+            If choix = 0 And click = 0 Then
                 oldCard = cardClicked
-                pbValue(numCard) = nb(numCard)
+                pbValue(numCard) = valeur(numCard)
                 oldValue = numCard
-                choice = 1
+                choix = 1
                 click = 1
             End If
 
-            If choice = 1 And click = 0 Then
-                pbValue(numCard) = nb(numCard)
+            If choix = 1 And click = 0 Then
+                pbValue(numCard) = valeur(numCard)
                 If pbValue(numCard) <> pbValue(oldValue) Then
                     numCardSaved = numCard
                     cardClickedSaved = cardClicked
                     ShowCard.Start()
-                    check = 0
-
+                    peutRetourner = 0
+                Else
+                    ptScore += 1
+                    tpsScore = TPS - temps
+                    ScoreLabel.Text = "Score : " + Str(ptScore) + " en " + Str(tpsScore) + "sc"
+                    If ptScore = 10 Then
+                        fin = 1
+                    End If
                 End If
-                choice = 0
+                choix = 0
                 click = 1
             End If
         End If
@@ -48,7 +60,7 @@
         oldCard.Image = My.Resources.carte
         pbValue(numCard) = -1
         pbValue(oldValue) = -1
-        check = 1
+        peutRetourner = 1
     End Sub
 
     Private Sub RandomizeArray(ByVal items() As Integer)
@@ -63,35 +75,37 @@
         Next i
     End Sub
 
-    Private Function calculScore()
-        Dim x As Integer = 0
-        Array.Sort(pbValue)
-        For i = 1 To 19 Step +1
-            If pbValue(i - 1) = pbValue(i) And pbValue(i - 1) <> -1 Then
-                x += 1
-            End If
-        Next
-        Return x
-    End Function
+    'Private Function calculScore()
+    'Dim x As Integer = 0
+    'Array.Sort(pbValue)
+    'For i = 1 To 19 Step +1
+    'If pbValue(i - 1) = pbValue(i) And pbValue(i - 1) <> -1 Then
+    'x += 1
+    'End If
+    'Next
+    'Return x
+    'End Function
 
     Private Sub Plateau_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        Label1.Text = temps
-        RandomizeArray(nb)
-        Timer1.Start()
+        TempsLabel.Text = temps
+        RandomizeArray(valeur)
+        TempsJeu.Start()
     End Sub
 
-    Private Sub Timer1_Tick(sender As Object, e As EventArgs) Handles Timer1.Tick
-        temps -= 1
-        Label1.Text = temps
-        If temps = 0 Then
-            Timer1.Stop()
-            If check = 0 Then
+    Private Sub Timer1_Tick(sender As Object, e As EventArgs) Handles TempsJeu.Tick
+        If fin = 0 Then
+            temps -= 1
+            TempsLabel.Text = temps
+        End If
+        If temps = 0 Or fin = 1 Then
+            TempsJeu.Stop()
+            If peutRetourner = 0 Then
                 pbValue(numCardSaved) = -1
                 pbValue(oldValue) = -1
                 ShowCard.Stop()
             End If
-            check = 0
-            Label2.Text = "Score : " + Str(calculScore())
+            peutRetourner = 0
+            TempsLabel.Text = "Fin"
         End If
     End Sub
 
