@@ -7,10 +7,6 @@ Module Enregistrement
         Dim tempsCumuléJeu As Integer
     End Structure
 
-    Public Structure Param
-        Dim tempsSupp As Integer
-    End Structure
-
     Dim tab_joueur As New List(Of Joueur)
 
     Public Function getNbJoueur() As Integer
@@ -21,4 +17,9 @@ Module Enregistrement
         tab_joueur.Add(j)
         Return getNbJoueur() - 1
     End Function
+
+    Public Function getTemps()
+        Return Val(Form4.ReglerTemps.Text) * 60
+    End Function
 End Module
+
