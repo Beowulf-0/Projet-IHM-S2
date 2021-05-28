@@ -1,6 +1,6 @@
 Public Class Form4
     Dim t_OptionsTemps() As String = {"Aucun", "Désactiver le temps", "Régler le temps à :"}
-    Dim t_imagesCartes() As String = {"Test", "Test1", "Test2"}
+    Dim t_imagesCartes() As String = {"Rouge-Orange", "Bleu-Vert", "Gris-Noir"}
     Dim time As Integer
 
     Private Sub Quitter_Click(sender As Object, e As EventArgs) Handles Quitter.Click
